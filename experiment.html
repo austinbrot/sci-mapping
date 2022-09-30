@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>My experiment</title>
+  <!-- <script type="module" src="./experiment.js"></script> -->
+  <script src="jspsych/jspsych.js"></script>
+  <script src="jspsych/plugin-html-keyboard-response.js"></script>
+  <script src="jspsych/plugin-image-keyboard-response.js"></script>
+  <script src="jspsych/plugin-preload.js"></script>
+  <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css" />
+  <style>
+    .fixation {
+      font-size: 90px;
+      font-weight: bold;
+      color: black;
+    }
+
+    .stimulus {
+      font-size: xx-large;
+    }
+
+    .movement {
+      background-color: black;
+      position: fixed;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body></body>
+
+<script>
+  STIMULUS_DURATION = 4000;
+  MOVMENT_DURATION = 15000;
+  FIXATION_DURATION= 6000;
+  INSTRUCTION_POST_TRIAL_GAP = 2000;
+  N_REPETITIONS = 1;
+  N_BLOCKS = 1;
+
+  MOVEMENT_TEXT = `
+    <p>
+      In this experiment, you will be shown a text describing a movement. It 
+      will include the body part and the side of your body on which you should 
+      move it.
+    </p>
+    <p>
+      Before seeing the stimulus, you will be presented with a black cross in
+      the center of the screen. Stare at this cross when it appears. After the
+      text leaves the screen, you will be shown a black screen.
+      While this black screen is visible, flex and extend the body part 
+      continuously at a speed of one contraction(?) per second(?). If you
+      cannot move it, attempt to move it as you would if you were able. Stop
+      when you see the next white screen with a black cross in the middle. 
+    </p>
+    <p>Press any key to begin.</p>
+  `;
+
+  IMAGERY_TEXT = `
+    <p>
+      In this experiment, you will be shown a text describing a movement. It 
+      will include the body part and the side of your body on which you should 
+      move it.
+    </p>
+    <p>
+      Before seeing the stimulus, you will be presented with a black cross in
+      the center of the screen. Stare at this cross when it appears.
+      After the text leaves the screen, you will be shown a black screen.
+      While this screen is visible, imagine flexing and extending the
+      body part continuously at a speed of one contraction(?) per second(?). 
+      Do not move. Stop when you see the next white screen with a black cross in
+      the middle. 
+    </p>
+    <p>Press any key to begin.</p>
+  `;
+
+  STIMULUS_TEXTS = [
+    'left wrist', 'right wrist', 'left fingers', 'right fingers', 'left elbow',
+    'right elbow', 'left ankle', 'right ankle', 'left toes', 'right toes',
+    'lips',
+  ];
+
+  const jsPsych = initJsPsych();
+  let timeline = [];
+
+  const stimuli = STIMULUS_TEXTS.map((text) => ({stimulus: text}));
+  const fixation = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: '+',
+    choices: 'NO_KEYS',
+    trial_duration: FIXATION_DURATION,
+    css_classes: ['fixation'],
+  }
+  const trial = {
+    type:jsPsychHtmlKeyboardResponse,
+    stimulus: jsPsych.timelineVariable('stimulus'),
+    choices: 'NO_KEYS',
+    trial_duration: STIMULUS_DURATION,
+    css_classes: ['stimulus'],
+  }
+  const movement = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: '<div></div>',
+    chocies: 'NO_KEYS',
+    trial_duration: MOVMENT_DURATION,
+    css_classes: ['movement'],
+  }
+
+  const trial_procedure = {
+    timeline: [fixation, trial, movement],
+    timeline_variables: stimuli,
+    randomize_order: true,
+  }
+
+  timeline.push({
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: MOVEMENT_TEXT,
+  })
+  timeline.push(trial_procedure)
+
+  jsPsych.run(timeline);
+</script>
+
+</html>
