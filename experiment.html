@@ -32,14 +32,14 @@
 <body></body>
 
 <script>
-  STIMULUS_DURATION = 4000;
-  MOVMENT_DURATION = 15000;
-  FIXATION_DURATION= 6000;
-  INSTRUCTION_POST_TRIAL_GAP = 2000;
-  N_REPETITIONS = 1;
-  N_BLOCKS = 1;
+  const STIMULUS_DURATION = 4000;
+  const MOVMENT_DURATION = 15000;
+  const FIXATION_DURATION= 6000;
+  const INSTRUCTION_POST_TRIAL_GAP = 2000;
+  const N_REPETITIONS = 1;
+  const N_BLOCKS = 1;
 
-  MOVEMENT_TEXT = `
+  const MOVEMENT_INSTRUCTION_TEXT = `
     <p>
       In this experiment, you will be shown a text describing a movement. It 
       will include the body part and the side of your body on which you should 
@@ -57,7 +57,7 @@
     <p>Press any key to begin.</p>
   `;
 
-  IMAGERY_TEXT = `
+  const IMAGERY_INSTRUCTION_TEXT = `
     <p>
       In this experiment, you will be shown a text describing a movement. It 
       will include the body part and the side of your body on which you should 
@@ -75,50 +75,58 @@
     <p>Press any key to begin.</p>
   `;
 
-  STIMULUS_TEXTS = [
+  const STIMULUS_TEXTS = [
     'left wrist', 'right wrist', 'left fingers', 'right fingers', 'left elbow',
     'right elbow', 'left ankle', 'right ankle', 'left toes', 'right toes',
     'lips',
   ];
+  const STIMULI = STIMULUS_TEXTS.map((text) => ({stimulus: text}));
 
   const jsPsych = initJsPsych();
-  let timeline = [];
+  function addProcedure(timeline, trial_type) {
+    const fixation = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: '+',
+        choices: 'NO_KEYS',
+        trial_duration: FIXATION_DURATION,
+        css_classes: ['fixation'],
+    };
+    const trial = {
+        type:jsPsychHtmlKeyboardResponse,
+        stimulus: jsPsych.timelineVariable('stimulus'),
+        choices: 'NO_KEYS',
+        trial_duration: STIMULUS_DURATION,
+        css_classes: ['stimulus'],
+    };
+    const movement = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: '<div></div>',
+        chocies: 'NO_KEYS',
+        trial_duration: MOVMENT_DURATION,
+        css_classes: ['movement'],
+    };
 
-  const stimuli = STIMULUS_TEXTS.map((text) => ({stimulus: text}));
-  const fixation = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: '+',
-    choices: 'NO_KEYS',
-    trial_duration: FIXATION_DURATION,
-    css_classes: ['fixation'],
-  }
-  const trial = {
-    type:jsPsychHtmlKeyboardResponse,
-    stimulus: jsPsych.timelineVariable('stimulus'),
-    choices: 'NO_KEYS',
-    trial_duration: STIMULUS_DURATION,
-    css_classes: ['stimulus'],
-  }
-  const movement = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: '<div></div>',
-    chocies: 'NO_KEYS',
-    trial_duration: MOVMENT_DURATION,
-    css_classes: ['movement'],
-  }
+    const trial_procedure = {
+        timeline: [fixation, trial, movement],
+        timeline_variables: STIMULI,
+        randomize_order: true,
+    };
 
-  const trial_procedure = {
-    timeline: [fixation, trial, movement],
-    timeline_variables: stimuli,
-    randomize_order: true,
+    if (!(trial_type === 'movement' || trial_type === 'imagery')) {
+        const message = IMAGERY_TEXT;
+        throw Error(message);
+    }
+
+    timeline.push({
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: MOVEMENT_INSTRUCTION_TEXT,
+    })
+    timeline.push(trial_procedure)
   }
-
-  timeline.push({
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: MOVEMENT_TEXT,
-  })
-  timeline.push(trial_procedure)
-
+  
+  const timeline = [];
+  addProcedure(timeline, 'movement')
+  addProcedure(timeline, 'imagery')
   jsPsych.run(timeline);
 </script>
 
