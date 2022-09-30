@@ -83,7 +83,7 @@
   const STIMULI = STIMULUS_TEXTS.map((text) => ({stimulus: text}));
 
   const jsPsych = initJsPsych();
-  function addProcedure(timeline, trial_type) {
+  function makeProcedure(trial_type) {
     const fixation = {
         type: jsPsychHtmlKeyboardResponse,
         stimulus: '+',
@@ -117,16 +117,18 @@
         throw Error(message);
     }
 
-    timeline.push({
+    const instructions = {
         type: jsPsychHtmlKeyboardResponse,
         stimulus: MOVEMENT_INSTRUCTION_TEXT,
-    })
-    timeline.push(trial_procedure)
+    };
+
+    return [instructions, trial_procedure];
   }
   
-  const timeline = [];
-  addProcedure(timeline, 'movement')
-  addProcedure(timeline, 'imagery')
+  const timeline = [
+    makeProcedure('movement'),
+    makeProcedure('imagery'),
+  ].flat();
   jsPsych.run(timeline);
 </script>
 
