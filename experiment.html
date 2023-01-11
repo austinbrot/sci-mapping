@@ -10,6 +10,10 @@
   <script src="jspsych/plugin-preload.js"></script>
   <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css" />
   <style>
+    body {
+        background-color: grey;
+    }
+
     .fixation {
       font-size: 90px;
       font-weight: bold;
@@ -34,11 +38,8 @@
   const CUE_DURATION = 2.2 * 1000;
   const FIXATION_DURATION= 8 * 1000;
   const INSTRUCTION_POST_TRIAL_GAP = 2000;
-  const N_REPETITIONS = 1;
-  const N_BLOCKS = 1;
   const MOVEMENT_WAIT_DURATION = 1.1 * 1000;
   const MOVEMENT_GO_DURATION = 0.4 * 1000;
-  const REP_DURATION = MOVEMENT_WAIT_DURATION + MOVEMENT_GO_DURATION;
   const REPS_PER_STIM = 12;
 
   const MOVEMENT_INSTRUCTION_TEXT = `
@@ -133,7 +134,7 @@
         stimulus: MOVEMENT_INSTRUCTION_TEXT,
     };
 
-    return [instructions, trial_procedure];
+    return [instructions, trial_procedure, fixation];
   }
   
   const timeline = [
