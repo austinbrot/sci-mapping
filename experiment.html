@@ -31,15 +31,15 @@
 <body></body>
 
 <script>
-  const STIMULUS_DURATION = 4000;
-  const MOVEMENT_TRIAL_DURATION = 15000;
-  const FIXATION_DURATION= 6000;
+  const CUE_DURATION = 2.2 * 1000;
+  const FIXATION_DURATION= 8 * 1000;
   const INSTRUCTION_POST_TRIAL_GAP = 2000;
   const N_REPETITIONS = 1;
   const N_BLOCKS = 1;
   const MOVEMENT_WAIT_DURATION = 1.1 * 1000;
   const MOVEMENT_GO_DURATION = 0.4 * 1000;
   const REP_DURATION = MOVEMENT_WAIT_DURATION + MOVEMENT_GO_DURATION;
+  const REPS_PER_STIM = 12;
 
   const MOVEMENT_INSTRUCTION_TEXT = `
     <p>
@@ -97,7 +97,7 @@
         type:jsPsychHtmlKeyboardResponse,
         stimulus: jsPsych.timelineVariable('stimulus'),
         choices: 'NO_KEYS',
-        trial_duration: STIMULUS_DURATION,
+        trial_duration: CUE_DURATION,
         css_classes: ['stimulus'],
     };
     const movementWaitStimulus = {
@@ -113,11 +113,7 @@
         chocies: 'NO_KEYS',
         trial_duration: MOVEMENT_GO_DURATION,
     };
-    const movementReps = Math.floor(
-        (MOVEMENT_TRIAL_DURATION - MOVEMENT_WAIT_DURATION) / REP_DURATION
-    ); 
-
-    const movementStimuli = Array(movementReps)
+    const movementStimuli = Array(REPS_PER_STIM)
         .fill([movementWaitStimulus, movementGoStimulus])
         .flat()
         .concat(movementWaitStimulus);
