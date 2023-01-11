@@ -21,10 +21,9 @@
     }
 
     .movement {
-      background-color: black;
-      position: fixed;
-      height: 100%;
-      width: 100%;
+      color: black;
+      font-size: 90px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -33,11 +32,14 @@
 
 <script>
   const STIMULUS_DURATION = 4000;
-  const MOVMENT_DURATION = 15000;
+  const MOVEMENT_TRIAL_DURATION = 15000;
   const FIXATION_DURATION= 6000;
   const INSTRUCTION_POST_TRIAL_GAP = 2000;
   const N_REPETITIONS = 1;
   const N_BLOCKS = 1;
+  const MOVEMENT_WAIT_DURATION = 1.1 * 1000;
+  const MOVEMENT_GO_DURATION = 0.4 * 1000;
+  const REP_DURATION = MOVEMENT_WAIT_DURATION + MOVEMENT_GO_DURATION;
 
   const MOVEMENT_INSTRUCTION_TEXT = `
     <p>
@@ -91,23 +93,36 @@
         trial_duration: FIXATION_DURATION,
         css_classes: ['fixation'],
     };
-    const trial = {
+    const cue = {
         type:jsPsychHtmlKeyboardResponse,
         stimulus: jsPsych.timelineVariable('stimulus'),
         choices: 'NO_KEYS',
         trial_duration: STIMULUS_DURATION,
         css_classes: ['stimulus'],
     };
-    const movement = {
+    const movementWaitStimulus = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: '^',
+        chocies: 'NO_KEYS',
+        trial_duration: MOVEMENT_WAIT_DURATION,
+        css_classes: ['movement'],
+    };
+    const movementGoStimulus = {
         type: jsPsychHtmlKeyboardResponse,
         stimulus: '<div></div>',
         chocies: 'NO_KEYS',
-        trial_duration: MOVMENT_DURATION,
-        css_classes: ['movement'],
+        trial_duration: MOVEMENT_GO_DURATION,
     };
+    const movementReps = Math.floor(
+        (MOVEMENT_TRIAL_DURATION - MOVEMENT_WAIT_DURATION) / REP_DURATION
+    ); 
 
+    const movementStimuli = Array(movementReps)
+        .fill([movementWaitStimulus, movementGoStimulus])
+        .flat()
+        .concat(movementWaitStimulus);
     const trial_procedure = {
-        timeline: [fixation, trial, movement],
+        timeline: [fixation, cue].concat(movementStimuli),
         timeline_variables: STIMULI,
         randomize_order: true,
     };
